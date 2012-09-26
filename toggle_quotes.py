@@ -3,7 +3,7 @@ import re
 import string
 from sublime import Region
 
-re_quotes = re.compile("^(['\"])(.*)\\1$")
+re_quotes = re.compile("^(\s{0,})(['\"])(.*)\\2$")
 
 
 class ToggleQuotesCommand(sublime_plugin.TextCommand):
@@ -24,12 +24,13 @@ class ToggleQuotesCommand(sublime_plugin.TextCommand):
                 if not res:
                     #  still no match... skip it!
                     continue
-            oldQuotes = res.group(1)
+            prevSpace = res.group(1)
+            oldQuotes = res.group(2)
             newQuotes = "'" if oldQuotes == '"' else '"'
-            text = res.group(2)
+            text = res.group(3)
             text = string.replace(text, newQuotes, "\\" + newQuotes)
             text = string.replace(text, "\\" + oldQuotes, oldQuotes)
-            text = newQuotes + text + newQuotes
+            text = prevSpace + newQuotes + text + newQuotes
             v.replace(edit, sel, text)
 
 
